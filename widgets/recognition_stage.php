@@ -112,14 +112,14 @@ class Elementor_RecognitionStage_Widget extends \Elementor\Widget_Base
 		global $wpdb;
 		$timeout_new = $this->timeout * 1000;
 
+		print("test " . $_COOKIE['wp_personalize_avatar']);
 		// Check if cookie is already set
 		if (isset($_COOKIE['wp_personalize_avatar'])) {
-
 			// Use information stored in the cookie 
 			$avatar = $_COOKIE['wp_personalize_avatar'];
 
 			$args = array(
-				'post_title'       => "conversion_stage_avatar_$avatar",
+				'post_title'      => "conversion_stage_avatar_$avatar",
 				'post_type'       => 'elementor_library',
 				'post_status'     => 'publish',
 				'posts_per_page'  => -1,
@@ -139,19 +139,19 @@ class Elementor_RecognitionStage_Widget extends \Elementor\Widget_Base
 			$recognition_stage_script = "<script>window.onload = function() {setTimeout(function() {";
 
 			foreach ($posts as $popup) {
-				$recognition_stage_script .= "elementorProFrontend.modules.popup.showPopup( { id: $popup->ID } );";
+				if ($popup->title == "conversion_stage_avatar_$avatar")
+					$recognition_stage_script .= "elementorProFrontend.modules.popup.showPopup( { id: $popup->ID } );";
 			}
 
 			$recognition_stage_script .= "}, $timeout_new);};</script>";
 		} else {
-
 			$posttitle = 'conversion_stage_unrecognized';
 			$postid = $wpdb->get_var("SELECT ID FROM $wpdb->posts WHERE post_title = '" . $posttitle . "'");
 			$recognition_stage_script = "<script>
 			window.onload = function() {
-			setTimeout(function() {
-				elementorProFrontend.modules.popup.showPopup( { id: $postid } );
-			}, $timeout_new);
+				setTimeout(function() {
+					elementorProFrontend.modules.popup.showPopup( { id: $postid } );
+				}, $timeout_new);
 			};</script>";
 		}
 
@@ -169,16 +169,13 @@ class Elementor_RecognitionStage_Widget extends \Elementor\Widget_Base
 	 */
 	protected function render()
 	{
-		print(json_decode($_COOKIE['wp_personalize_avatar']));
-		print(json_decode($_COOKIE['wp_personalize_recognition_stages']));
-
 		print("
-<script>
-function recognize_action(action) {
-  jQuery.ajax({url: '/wp-json/wp-personalize/v1/recognize_action', method: 'POST', data: {action}});
-}
-</script>
-");
+			<script>
+				function recognize_action(action) {
+					jQuery.ajax({url: '/wp-json/wp-personalize/v1/recognize_action', method: 'POST', data: {action}});
+				}
+			</script>
+		");
 
 		print($this->recognize_user());
 	}

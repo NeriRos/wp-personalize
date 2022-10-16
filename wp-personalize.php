@@ -70,7 +70,7 @@ function set_recognition_stages($stage, $avatar)
 
 function get_recognized_stages()
 {
-  return json_decode(urldecode($_COOKIE['wp_personalize_recognition_stages']));
+  return json_decode(stripslashes($_COOKIE['wp_personalize_recognition_stages']), true);
 }
 
 function get_recognized_avatar()
@@ -157,7 +157,7 @@ add_filter('wp_personalize_recognize_action', 'recognize_action', 10, 1);
 
 function recognize_action_callback()
 {
-  if ($_POST['action']) {
+  if (isset($_POST['action'])) {
     $avatar = apply_filters('wp_personalize_recognize_action', $_POST['action']);
 
     set_recognition_stages("action", $avatar);
