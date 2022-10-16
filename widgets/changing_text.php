@@ -1,6 +1,6 @@
 <?php
 if (!defined('ABSPATH')) {
-  exit; // Exit if accessed directly.
+	exit; // Exit if accessed directly.
 }
 
 
@@ -16,190 +16,187 @@ use \Elementor\Core\Kits\Documents\Tabs\Global_Typography;
  */
 class Elementor_changingText_Widget extends \Elementor\Widget_Base
 {
-	
+
 	public $max_utms = 10;
 
-  /**
-   * Get widget name.
-   *
-   * Retrieve changingText widget name.
-   *
-   * @since 1.0.0
-   * @access public
-   * @return string Widget name.
-   */
-  public function get_name()
-  {
-    return 'changingText';
-  }
+	/**
+	 * Get widget name.
+	 *
+	 * Retrieve changingText widget name.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return string Widget name.
+	 */
+	public function get_name()
+	{
+		return 'changingText';
+	}
 
-  /**
-   * Get widget title.
-   *
-   * Retrieve changingText widget title.
-   *
-   * @since 1.0.0
-   * @access public
-   * @return string Widget title.
-   */
-  public function get_title()
-  {
-    return esc_html__('changingText', 'elementor-changingText-widget');
-  }
+	/**
+	 * Get widget title.
+	 *
+	 * Retrieve changingText widget title.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return string Widget title.
+	 */
+	public function get_title()
+	{
+		return esc_html__('changingText', 'elementor-changingText-widget');
+	}
 
-  /**
-   * Get widget icon.
-   *
-   * Retrieve changingText widget icon.
-   *
-   * @since 1.0.0
-   * @access public
-   * @return string Widget icon.
-   */
-  public function get_icon()
-  {
-    return 'eicon-code';
-  }
+	/**
+	 * Get widget icon.
+	 *
+	 * Retrieve changingText widget icon.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return string Widget icon.
+	 */
+	public function get_icon()
+	{
+		return 'eicon-code';
+	}
 
-  /**
-   * Get widget categories.
-   *
-   * Retrieve the list of categories the changingText widget belongs to.
-   *
-   * @since 1.0.0
-   * @access public
-   * @return array Widget categories.
-   */
-  public function get_categories()
-  {
-    return ['general'];
-  }
+	/**
+	 * Get widget categories.
+	 *
+	 * Retrieve the list of categories the changingText widget belongs to.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return array Widget categories.
+	 */
+	public function get_categories()
+	{
+		return ['general'];
+	}
 
-  /**
-   * Get widget keywords.
-   *
-   * Retrieve the list of keywords the changingText widget belongs to.
-   *
-   * @since 1.0.0
-   * @access public
-   * @return array Widget keywords.
-   */
-  public function get_keywords()
-  {
-    return ['changingText', 'customize', 'utm', 'text'];
-  }
+	/**
+	 * Get widget keywords.
+	 *
+	 * Retrieve the list of keywords the changingText widget belongs to.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return array Widget keywords.
+	 */
+	public function get_keywords()
+	{
+		return ['changingText', 'customize', 'utm', 'text'];
+	}
 
-	
-  /**
-   * Get utm's id.
-   *
-   * Retrieve the id of current utm.
-   *
-   * @since 1.0.0
-   * @access public
-   * @return text UTM's id.
-   */
-  public function get_utm_id($settings)
-  {
-	for($i = 1; $i <= $this->max_utms; $i++) {
-		$utm = $_GET["UTM"];
-		if(!isset($utm)) {
-			$utm = $_GET["utm"];
+	/**
+	 * Get utm's id.
+	 *
+	 * Retrieve the id of current utm.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return text UTM's id.
+	 */
+	public function get_utm_id($settings)
+	{
+		for ($i = 1; $i <= $this->max_utms; $i++) {
+			$utm = $_GET["UTM"];
+			if (!isset($utm)) {
+				$utm = $_GET["utm"];
+			}
+			$utm_settings = $settings["UTM$i"];
+			if ($utm_settings && $utm_settings == $utm)
+				return $i;
 		}
-		$utm_settings = $settings["UTM$i"];
-		if($utm_settings && $utm_settings == $utm)
-    		return $i;
-  	}
-	  
-	return;
-  }
-	
-	
-  /**
-   * Get utm's text.
-   *
-   * Retrieve the customized text for current utm.
-   *
-   * @since 1.0.0
-   * @access public
-   * @return text UTM's text.
-   */
-  public function get_text($settings)
-  {
-	$utm_id = $this->get_utm_id($settings);
-	return ($utm_id) ? $settings["UTM$utm_id-T"] : $settings['default_text'];
-  }
-	
-  /**
-   * Register changingText widget controls.
-   *
-   * Add input fields to allow the user to customize the widget settings.
-   *
-   * @since 1.0.0
-   * @access protected
-   */
-  protected function register_controls()
-  {
 
-    $this->start_controls_section(
-      'content_section',
-      [
-        'label' => esc_html__('Content', 'elementor-changingText-widget'),
-        'tab' => \Elementor\Controls_Manager::TAB_CONTENT,
-      ]
-    );
+		return;
+	}
+
+	/**
+	 * Get utm's text.
+	 *
+	 * Retrieve the customized text for current utm.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return text UTM's text.
+	 */
+	public function get_text($settings)
+	{
+		$utm_id = $this->get_utm_id($settings);
+		return ($utm_id) ? $settings["UTM$utm_id-T"] : $settings['default_text'];
+	}
+
+	/**
+	 * Register changingText widget controls.
+	 *
+	 * Add input fields to allow the user to customize the widget settings.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
+	protected function register_controls()
+	{
+
+		$this->start_controls_section(
+			'content_section',
+			[
+				'label' => esc_html__('Content', 'elementor-changingText-widget'),
+				'tab' => \Elementor\Controls_Manager::TAB_CONTENT,
+			]
+		);
 
 
 		$this->add_control(
-      "default_text",
+			"default_text",
 			[
-				'label' => esc_html__( "default Text", 'elementor-changingText-widget' ),
+				'label' => esc_html__("default Text", 'elementor-changingText-widget'),
 				'type' => \Elementor\Controls_Manager::TEXTAREA,
 				'dynamic' => [
 					'active' => true,
 				],
-				'placeholder' => esc_html__( "Enter your default title", 'elementor-changingText-widget' ),
+				'placeholder' => esc_html__("Enter your default title", 'elementor-changingText-widget'),
 			]
 		);
-	  for($i = 1; $i <= $this->max_utms; $i++) {
-	  
-		  $this->add_control(
-      "UTM$i",
-      [
-        'label' => esc_html__("UTM $i", 'elementor-changingText-widget'),
-        'type' => \Elementor\Controls_Manager::TEXT,
-        'input_type' => 'text',
-        'placeholder' => esc_html__('UTM', 'elementor-changingText-widget'),
-      ]
-    );
+		for ($i = 1; $i <= $this->max_utms; $i++) {
 
-		$this->add_control(
-      "UTM$i-T",
-			[
-				'label' => esc_html__( "UTM $i Text", 'elementor-changingText-widget' ),
-				'type' => \Elementor\Controls_Manager::TEXTAREA,
-				'dynamic' => [
-					'active' => true,
-				],
-				'placeholder' => esc_html__( "Enter your title for UTM $i", 'elementor-changingText-widget' ),
-			]
-		);
-    
-	  }
+			$this->add_control(
+				"UTM$i",
+				[
+					'label' => esc_html__("UTM $i", 'elementor-changingText-widget'),
+					'type' => \Elementor\Controls_Manager::TEXT,
+					'input_type' => 'text',
+					'placeholder' => esc_html__('UTM', 'elementor-changingText-widget'),
+				]
+			);
 
-    $this->end_controls_section();
-	  
-	  $this->start_controls_section(
+			$this->add_control(
+				"UTM$i-T",
+				[
+					'label' => esc_html__("UTM $i Text", 'elementor-changingText-widget'),
+					'type' => \Elementor\Controls_Manager::TEXTAREA,
+					'dynamic' => [
+						'active' => true,
+					],
+					'placeholder' => esc_html__("Enter your title for UTM $i", 'elementor-changingText-widget'),
+				]
+			);
+		}
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
 			'section_title',
 			[
-				'label' => esc_html__( 'Title', 'elementor' ),
+				'label' => esc_html__('Title', 'elementor'),
 			]
 		);
 
 		$this->add_control(
 			'link',
 			[
-				'label' => esc_html__( 'Link', 'elementor' ),
+				'label' => esc_html__('Link', 'elementor'),
 				'type' => \Elementor\Controls_Manager::URL,
 				'dynamic' => [
 					'active' => true,
@@ -214,16 +211,16 @@ class Elementor_changingText_Widget extends \Elementor\Widget_Base
 		$this->add_control(
 			'size',
 			[
-				'label' => esc_html__( 'Size', 'elementor' ),
+				'label' => esc_html__('Size', 'elementor'),
 				'type' => \Elementor\Controls_Manager::SELECT,
 				'default' => 'default',
 				'options' => [
-					'default' => esc_html__( 'Default', 'elementor' ),
-					'small' => esc_html__( 'Small', 'elementor' ),
-					'medium' => esc_html__( 'Medium', 'elementor' ),
-					'large' => esc_html__( 'Large', 'elementor' ),
-					'xl' => esc_html__( 'XL', 'elementor' ),
-					'xxl' => esc_html__( 'XXL', 'elementor' ),
+					'default' => esc_html__('Default', 'elementor'),
+					'small' => esc_html__('Small', 'elementor'),
+					'medium' => esc_html__('Medium', 'elementor'),
+					'large' => esc_html__('Large', 'elementor'),
+					'xl' => esc_html__('XL', 'elementor'),
+					'xxl' => esc_html__('XXL', 'elementor'),
 				],
 			]
 		);
@@ -231,7 +228,7 @@ class Elementor_changingText_Widget extends \Elementor\Widget_Base
 		$this->add_control(
 			'header_size',
 			[
-				'label' => esc_html__( 'HTML Tag', 'elementor' ),
+				'label' => esc_html__('HTML Tag', 'elementor'),
 				'type' => \Elementor\Controls_Manager::SELECT,
 				'options' => [
 					'h1' => 'H1',
@@ -251,23 +248,23 @@ class Elementor_changingText_Widget extends \Elementor\Widget_Base
 		$this->add_responsive_control(
 			'align',
 			[
-				'label' => esc_html__( 'Alignment', 'elementor' ),
+				'label' => esc_html__('Alignment', 'elementor'),
 				'type' => \Elementor\Controls_Manager::CHOOSE,
 				'options' => [
 					'left' => [
-						'title' => esc_html__( 'Left', 'elementor' ),
+						'title' => esc_html__('Left', 'elementor'),
 						'icon' => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__( 'Center', 'elementor' ),
+						'title' => esc_html__('Center', 'elementor'),
 						'icon' => 'eicon-text-align-center',
 					],
 					'right' => [
-						'title' => esc_html__( 'Right', 'elementor' ),
+						'title' => esc_html__('Right', 'elementor'),
 						'icon' => 'eicon-text-align-right',
 					],
 					'justify' => [
-						'title' => esc_html__( 'Justified', 'elementor' ),
+						'title' => esc_html__('Justified', 'elementor'),
 						'icon' => 'eicon-text-align-justify',
 					],
 				],
@@ -281,7 +278,7 @@ class Elementor_changingText_Widget extends \Elementor\Widget_Base
 		$this->add_control(
 			'view',
 			[
-				'label' => esc_html__( 'View', 'elementor' ),
+				'label' => esc_html__('View', 'elementor'),
 				'type' => \Elementor\Controls_Manager::HIDDEN,
 				'default' => 'traditional',
 			]
@@ -292,7 +289,7 @@ class Elementor_changingText_Widget extends \Elementor\Widget_Base
 		$this->start_controls_section(
 			'section_title_style',
 			[
-				'label' => esc_html__( 'Title', 'elementor' ),
+				'label' => esc_html__('Title', 'elementor'),
 				'tab' => \Elementor\Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -300,7 +297,7 @@ class Elementor_changingText_Widget extends \Elementor\Widget_Base
 		$this->add_control(
 			'title_color',
 			[
-				'label' => esc_html__( 'Text Color', 'elementor' ),
+				'label' => esc_html__('Text Color', 'elementor'),
 				'type' => \Elementor\Controls_Manager::COLOR,
 				'global' => [
 					'default' => Global_Colors::COLOR_PRIMARY,
@@ -341,10 +338,10 @@ class Elementor_changingText_Widget extends \Elementor\Widget_Base
 		$this->add_control(
 			'blend_mode',
 			[
-				'label' => esc_html__( 'Blend Mode', 'elementor' ),
+				'label' => esc_html__('Blend Mode', 'elementor'),
 				'type' => \Elementor\Controls_Manager::SELECT,
 				'options' => [
-					'' => esc_html__( 'Normal', 'elementor' ),
+					'' => esc_html__('Normal', 'elementor'),
 					'multiply' => 'Multiply',
 					'screen' => 'Screen',
 					'overlay' => 'Overlay',
@@ -366,7 +363,7 @@ class Elementor_changingText_Widget extends \Elementor\Widget_Base
 		);
 
 		$this->end_controls_section();
-  }
+	}
 
 
 	/**
@@ -377,32 +374,33 @@ class Elementor_changingText_Widget extends \Elementor\Widget_Base
 	 * @since 1.0.0
 	 * @access protected
 	 */
-	protected function render() {
+	protected function render()
+	{
 		$settings = $this->get_settings_for_display();
 		$utm_id = $this->get_utm_id($settings);
 		$text_id = ($utm_id) ? "UTM$utm_id-T" : "default_text";
-		
-		if ( '' === $settings[$text_id] ) {
+
+		if ('' === $settings[$text_id]) {
 			return;
 		}
 
-		$this->add_render_attribute( $text_id, 'class', 'elementor-heading-title' );
+		$this->add_render_attribute($text_id, 'class', 'elementor-heading-title');
 
-		if ( ! empty( $settings['size'] ) ) {
-			$this->add_render_attribute( $text_id, 'class', 'elementor-size-' . $settings['size'] );
+		if (!empty($settings['size'])) {
+			$this->add_render_attribute($text_id, 'class', 'elementor-size-' . $settings['size']);
 		}
 
-		$this->add_inline_editing_attributes( $text_id );
+		$this->add_inline_editing_attributes($text_id);
 
 		$title = $settings[$text_id];
 
-		if ( ! empty( $settings['link']['url'] ) ) {
-			$this->add_link_attributes( 'url', $settings['link'] );
+		if (!empty($settings['link']['url'])) {
+			$this->add_link_attributes('url', $settings['link']);
 
-			$title = sprintf( '<a %1$s>%2$s</a>', $this->get_render_attribute_string( 'url' ), $title );
+			$title = sprintf('<a %1$s>%2$s</a>', $this->get_render_attribute_string('url'), $title);
 		}
 
-		$title_html = sprintf( '<%1$s %2$s>%3$s</%1$s>', \Elementor\Utils::validate_html_tag( $settings['header_size'] ), $this->get_render_attribute_string( $text_id ), $title );
+		$title_html = sprintf('<%1$s %2$s>%3$s</%1$s>', \Elementor\Utils::validate_html_tag($settings['header_size']), $this->get_render_attribute_string($text_id), $title);
 
 		// PHPCS - the variable $title_html holds safe data.
 		echo $title_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -416,25 +414,11 @@ class Elementor_changingText_Widget extends \Elementor\Widget_Base
 	 * @since 2.9.0
 	 * @access protected
 	 */
-	protected function content_template() {		
-		
-		?>
-		<#
-		var title = settings.default_text;
+	protected function content_template()
+	{
 
-		if ( '' !== settings.link.url ) {
-			title = '<a href="' + settings.link.url + '">' + title + '</a>';
-		}
-
-		view.addRenderAttribute( 'title', 'class', [ 'elementor-heading-title', 'elementor-size-' + settings.size ] );
-
-		view.addInlineEditingAttributes( 'title' );
-
-		var headerSizeTag = elementor.helpers.validateHTMLTag( settings.header_size ),
-			title_html = '<' + headerSizeTag  + ' ' + view.getRenderAttributeString( 'title' ) + '>' + title + '</' + headerSizeTag + '>';
-
-		print( title_html );
-		#>
-		<?php
+?>
+		<# var title=settings.default_text; if ( '' !==settings.link.url ) { title='<a href="' + settings.link.url + '">' + title + '</a>' ; } view.addRenderAttribute( 'title' , 'class' , [ 'elementor-heading-title' , 'elementor-size-' + settings.size ] ); view.addInlineEditingAttributes( 'title' ); var headerSizeTag=elementor.helpers.validateHTMLTag( settings.header_size ), title_html='<' + headerSizeTag + ' ' + view.getRenderAttributeString( 'title' ) + '>' + title + '</' + headerSizeTag + '>' ; print( title_html ); #>
+	<?php
 	}
 }
