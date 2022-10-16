@@ -56,7 +56,7 @@ function set_recognition_stages($stage, $avatar)
 
   if (!isset($_COOKIE['wp_personalize_recognition_stages'])) {
     // set a cookie for 1 year
-    setcookie('wp_personalize_recognition_stages', json_encode($new_stage), time() + 31556926, '/');
+    setcookie('wp_personalize_recognition_stages', json_encode([$new_stage]), time() + 31556926, '/');
   }
   if (isset($_COOKIE['wp_personalize_recognition_stages'])) {
     $stages = get_recognized_stages();
@@ -64,8 +64,14 @@ function set_recognition_stages($stage, $avatar)
     setcookie('wp_personalize_recognition_stages', json_encode($stages), time() + 31556926, '/');
   }
 
-  $avatar = get_recognized_avatar();
-  setcookie('wp_personalize_avatar', $avatar, time() + 31556926, '/');
+  if (!isset($_COOKIE['wp_personalize_avatar'])) {
+    // set a cookie for 1 year
+    setcookie('wp_personalize_avatar', json_encode($avatar), time() + 31556926, '/');
+  }
+  if (isset($_COOKIE['wp_personalize_avatar'])) {
+    $avatar = get_recognized_avatar();
+    setcookie('wp_personalize_avatar', json_encode($avatar), time() + 31556926, '/');
+  }
 }
 
 function get_recognized_stages()
