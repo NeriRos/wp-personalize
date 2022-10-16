@@ -13,6 +13,8 @@ if (!defined('ABSPATH')) {
 class Elementor_RecognitionStage_Widget extends \Elementor\Widget_Base
 {
 
+	public $timeout = 5;
+
 	/**
 	 * Get widget name.
 	 *
@@ -108,51 +110,49 @@ class Elementor_RecognitionStage_Widget extends \Elementor\Widget_Base
 	function recognize_user()
 	{
 		global $wpdb;
+		$timeout_new = $this->timeout * 1000;
 
 		// Check if cookie is already set
 		if (isset($_COOKIE['wp_personalize_avatar'])) {
 
-			// Do this if cookie is set 
-			function user_conversion_stage()
-			{
-				// Use information stored in the cookie 
-				$avatar = $_COOKIE['wp_personalize_avatar'];
+			// Use information stored in the cookie 
+			$avatar = $_COOKIE['wp_personalize_avatar'];
 
-				$args = array(
-					'post_title'       => "conversion_stage_avatar_$avatar",
-					'post_type'       => 'elementor_library',
-					'post_status'     => 'publish',
-					'posts_per_page'  => -1,
-					'order'           => 'ASC',
-					'meta_query'      => array(
-						array(
-							'key'         => '_elementor_template_type',
-							'value'       => 'popup',
-							'compare'     => 'LIKE',
-						),
-					)
-				);
+			$args = array(
+				'post_title'       => "conversion_stage_avatar_$avatar",
+				'post_type'       => 'elementor_library',
+				'post_status'     => 'publish',
+				'posts_per_page'  => -1,
+				'order'           => 'ASC',
+				'meta_query'      => array(
+					array(
+						'key'         => '_elementor_template_type',
+						'value'       => 'popup',
+						'compare'     => 'LIKE',
+					),
+				)
+			);
 
-				$query = new WP_Query($args);
-				$posts = $query->get_posts();
+			$query = new WP_Query($args);
+			$posts = $query->get_posts();
 
-				$recognition_stage_script = "<script>";
+			$recognition_stage_script = "<script>window.onload = function() {setTimeout(function() {";
 
-				foreach ($posts as $popup) {
-					$recognition_stage_script .= "elementorProFrontend.modules.popup.showPopup( { id: $popup->ID } );";
-				}
-
-				$recognition_stage_script .= "</script>";
-
-				return $recognition_stage_script;
+			foreach ($posts as $popup) {
+				$recognition_stage_script .= "elementorProFrontend.modules.popup.showPopup( { id: $popup->ID } );";
 			}
+
+			$recognition_stage_script .= "}, $timeout_new);};</script>";
 		} else {
 
 			$posttitle = 'conversion_stage_unrecognized';
 			$postid = $wpdb->get_var("SELECT ID FROM $wpdb->posts WHERE post_title = '" . $posttitle . "'");
-			echo $postid;
-
-			$recognition_stage_script = "<script>elementorProFrontend.modules.popup.showPopup( { id: $postid } );</script>";
+			$recognition_stage_script = "<script>
+			window.onload = function() {
+			setTimeout(function() {
+				elementorProFrontend.modules.popup.showPopup( { id: $postid } );
+			}, $timeout_new);
+			};</script>";
 		}
 
 		// Add a shortcode 
@@ -169,6 +169,8 @@ class Elementor_RecognitionStage_Widget extends \Elementor\Widget_Base
 	 */
 	protected function render()
 	{
+		print(json_decode($_COOKIE['wp_personalize_avatar']));
+		print(json_decode($_COOKIE['wp_personalize_recognition_stages']));
 
 		print("
 <script>
@@ -178,6 +180,6 @@ function recognize_action(action) {
 </script>
 ");
 
-		$this->recognize_user();
+		print($this->recognize_user());
 	}
 }

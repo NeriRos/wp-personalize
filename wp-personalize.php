@@ -26,7 +26,7 @@ if (!defined('ABSPATH')) {
  * @param \Elementor\Widgets_Manager $widgets_manager Elementor widgets manager.
  * @return void
  */
-function register_changing_text_widget($widgets_manager)
+function register_personalization_widgets($widgets_manager)
 {
 
   require_once(__DIR__ . '/widgets/changing_text.php');
@@ -36,47 +36,61 @@ function register_changing_text_widget($widgets_manager)
   $widgets_manager->register(new \Elementor_RecognitionStage_Widget());
 }
 
-add_action('elementor/widgets/register', 'register_changing_text_widget');
+add_action('elementor/widgets/register', 'register_personalization_widgets');
 
-function set_avatar_cookie($avatar)
-{
-  if (!isset($_COOKIE['wp_personalize_avatars'])) {
-    // set a cookie for 1 year
-    setcookie('wp_personalize_avatars', [$avatar], time() + 31556926);
-  } else if (isset($_COOKIE['wp_personalize_avatars'])) {
-    $avatars = $_COOKIE['wp_personalize_avatars'];
-    array_push($avatars, $avatar);
-    setcookie('wp_personalize_avatars', $avatars, time() + 31556926);
-  }
-}
+// function set_avatar_cookie($avatar)
+// {
+//   if (!isset($_COOKIE['wp_personalize_avatars'])) {
+//     // set a cookie for 1 year
+//     setcookie('wp_personalize_avatars', json_encode([$avatar]), time() + 31556926, '/');
+//   } else if (isset($_COOKIE['wp_personalize_avatars'])) {
+//     $avatars = get_recognized_avatars();
+//     array_push($avatars, $avatar);
+//     setcookie('wp_personalize_avatars', json_encode($avatars), time() + 31556926, '/');
+//   }
+// }
 
-function get_avatar()
+function set_recognition_stages($stage, $avatar)
 {
-  return end($_COOKIE['wp_personalize_avatars']);
-}
+  $new_stage = ["stage" => $stage, "avatar" => $avatar];
 
-function set_recognition_stages($stage)
-{
   if (!isset($_COOKIE['wp_personalize_recognition_stages'])) {
-
     // set a cookie for 1 year
-    setcookie('wp_personalize_recognition_stages', [$stage], time() + 31556926);
+    setcookie('wp_personalize_recognition_stages', json_encode($new_stage), time() + 31556926, '/');
   }
   if (isset($_COOKIE['wp_personalize_recognition_stages'])) {
-    $stages = $_COOKIE['wp_personalize_recognition_stages'];
-    $avatar = get_avatar();
-    $last_stage = array_pop($stages);
-    array_push($stages, $last_stage . "|" . $avatar, $stage);
-    setcookie('wp_personalize_recognition_stages', $stages, time() + 31556926);
+    $stages = get_recognized_stages();
+    array_push($stages, $new_stage);
+    setcookie('wp_personalize_recognition_stages', json_encode($stages), time() + 31556926, '/');
   }
+
+  $avatar = get_recognized_avatar();
+  setcookie('wp_personalize_avatar', $avatar, time() + 31556926, '/');
 }
+
+function get_recognized_stages()
+{
+  return json_decode(urldecode($_COOKIE['wp_personalize_recognition_stages']));
+}
+
+function get_recognized_avatar()
+{
+  return end(get_recognized_stages())['avatar'];
+}
+
+function get_recognized_stage()
+{
+  return end(get_recognized_stages())['stage'];
+}
+
+add_filter("wp_personalization_get_recognized_avatar", "get_recognized_avatar", 10, 0);
 
 function send_custom_webhook($record, $handler)
 {
   $form_name = $record->get_form_settings('form_name');
 
   // Replace MY_FORM_NAME with the name you gave your form
-  if ('recognize_user' !== $form_name || 'Recognize User' !== $form_name) {
+  if ('recognize_user' !== $form_name && 'Recognize User' !== $form_name) {
     return;
   }
 
@@ -85,8 +99,9 @@ function send_custom_webhook($record, $handler)
   foreach ($raw_fields as $id => $field) {
     $fields[$id] = $field['value'];
   }
-
-  do_action("wp_personalize_set_avatar_id_by_intent", $fields['intent'], $fields['problems']);
+  $avatar = apply_filters("wp_personalize_set_avatar_id", $fields['intent'], $fields['problems']);
+  // set_avatar_cookie($avatar);
+  set_recognition_stages("questionnair", $avatar);
 }
 add_action('elementor_pro/forms/new_record', 'send_custom_webhook', 10, 2);
 
@@ -94,7 +109,7 @@ function set_avatar_id($intent, $problems)
 {
   $avatar = 0;
 
-  if ($intent == "startup product" && in_array("no time", $problems)) {
+  if ($intent == "startup product" && str_contains("no time", $problems)) {
     $avatar = 4.2;
   } else if ($intent == "startup product") {
     $avatar = 4;
@@ -108,8 +123,7 @@ function set_avatar_id($intent, $problems)
     $avatar = -1;
   }
 
-  set_avatar_cookie($avatar);
-  set_recognition_stages("questionnair");
+  return $avatar;
 }
 
 add_filter('wp_personalize_set_avatar_id', 'set_avatar_id', 10, 2);
@@ -136,17 +150,18 @@ function recognize_action($action)
       break;
   }
 
-  set_recognition_stages("action");
-  if ($avatar != -2)
-    set_avatar_cookie($avatar);
+  return $avatar;
 }
 
 add_filter('wp_personalize_recognize_action', 'recognize_action', 10, 1);
 
 function recognize_action_callback()
 {
-  if ($_POST['action'])
-    do_action('wp_personalize_recognize_action', $_POST['action']);
+  if ($_POST['action']) {
+    $avatar = apply_filters('wp_personalize_recognize_action', $_POST['action']);
+
+    set_recognition_stages("action", $avatar);
+  }
 }
 
 add_action('rest_api_init', function () {
