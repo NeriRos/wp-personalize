@@ -30,8 +30,10 @@ function register_changing_text_widget($widgets_manager)
 {
 
   require_once(__DIR__ . '/widgets/changing_text.php');
+  require_once(__DIR__ . '/widgets/recognition_stage.php');
 
   $widgets_manager->register(new \Elementor_changingText_Widget());
+  $widgets_manager->register(new \Elementor_RecognitionStage_Widget());
 }
 
 add_action('elementor/widgets/register', 'register_changing_text_widget');
